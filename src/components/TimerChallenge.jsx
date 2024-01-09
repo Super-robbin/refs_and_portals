@@ -17,12 +17,13 @@ const TimerChallenge = ({ title, targetTime }) => {
     
     timer.current = setTimeout(() => {
       setTimerExpired(true);
-      dialog.current.showModal();
+      dialog.current.open();
 
       // Instead of using open inside the dialog element in the ResultModal component,
       // we create a ref called dialog and passed it as prop, which will then be used in the dialog element as ref (built-in prop for dialog).
       // Then here we use showModal() because the built-in dialog element has such a method which you can call to show it.
       // We now need to make sure below that the ResultModal is always visible and not conditionally rendered.
+      // UPDATE: We replaced showModal() with open() which is now in ResultModal inside the useImperativeHandle
     }, targetTime * 1000);
     console.log(dialog.current)
 
