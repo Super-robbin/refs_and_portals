@@ -14,7 +14,7 @@ const TimerChallenge = ({ title, targetTime }) => {
     // as you learned and set this equal to the timer.
     // Now we can clear the timeout by clearing it with timer.current (in handleStop)
     // because in this current property, we'll store this pointer at this timer.
-
+    
     timer.current = setTimeout(() => {
       setTimerExpired(true);
       dialog.current.showModal();
@@ -22,7 +22,9 @@ const TimerChallenge = ({ title, targetTime }) => {
       // Instead of using open inside the dialog element in the ResultModal component,
       // we create a ref called dialog and passed it as prop, which will then be used in the dialog element as ref (built-in prop for dialog).
       // Then here we use showModal() because the built-in dialog element has such a method which you can call to show it.
+      // We now need to make sure below that the ResultModal is always visible and not conditionally rendered.
     }, targetTime * 1000);
+    console.log(dialog.current)
 
     setTimerStarted(true);
   };
@@ -42,9 +44,10 @@ const TimerChallenge = ({ title, targetTime }) => {
       {/* 
     We conditionally render the ResultModal component and pass targetTime={targetTime}
     */}
-      {timerExpired && (
+      {/* {timerExpired && (
         <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
-      )}
+      )} */}
+      <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
       <section className="challenge">
         <h2>{title}</h2>
         <p className="challenge-time">
