@@ -1,4 +1,5 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // We cannot just pass a ref from another component as a prop, we need to use forwardRef.
 // Step 1 - import forwardRef and wrap the function below inside.
@@ -33,13 +34,19 @@ const ResultModal = forwardRef(function ResultModal(
       },
     };
   });
-
-  return (
+  // We use portals to move code inside specific elements of the DOM.
+  // In our case we used it to move the modal inside a different <div> and not inside the content, in the HTML file.
+  // IMPORTANT: Import createPortal from 'react-dom', then return createPortal like below and pass the entire JSX code inside
+  // as first argument, the second argument is the element you want to move the code to, in our case the <div> with ID modal.
+  return createPortal(
     // Dialog is a built-in element which by default is invisible, but we can make it visible by adding the 'open' attribute.
     // IMPORTANT: the dialog element actually comes with a built-in backdrop element that will be displayed behind the dialog
     // but unfortunately this built-in backdrop will not be shown if you force the dialog to be visible
     // by setting open to true like we did initially below.
-    <dialog ref={dialog} className="result-modal">
+
+    // IMPORTANT: dialog can be close with escape(ESC), however it won't trigger the onReset,
+    // therefore we need to pass it inside the built-in onClose prop like below.
+    <dialog ref={dialog} className="result-modal" onClose={onReset}>
       {userLost ? <h2>You lost</h2> : <h2>Your Score: {score}</h2>}
       <p>
         The target time was <strong>{targetTime} seconds.</strong>
@@ -51,7 +58,8 @@ const ResultModal = forwardRef(function ResultModal(
       <form method="dialog" onSubmit={onReset}>
         <button>Close</button>
       </form>
-    </dialog>
+    </dialog>,
+    document.getElementById("modal")
   );
 });
 
