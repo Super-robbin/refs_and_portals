@@ -10,19 +10,29 @@ const TimerChallenge = ({ title, targetTime }) => {
   const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
   const timerIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
 
+  if (timeRemaining <= 0) {
+    clearInterval(timer.current);
+    
+    dialog.current.open();
+  }
+
+  const handleReset = () => {
+    setTimeRemaining(targetTime * 1000);
+  }
+
   const handleStart = () => {
     // We can now use this timer and set timer.current
     // because you always must target this current property
     // as you learned and set this equal to the timer.
     // Now we can clear the timeout by clearing it with timer.current (in handleStop)
     // because in this current property, we'll store this pointer at this timer.
-    
+
     timer.current = setInterval(() => {
       // setTimerExpired(true);
       // dialog.current.open();
       // Since we changed setTimeout with setInterval we don't need the previous states anymore, just time remaining now.
       // We set the interval at 10 milliseconds and we calculate the time remaining from stopping - 10.
-      setTimeRemaining(prevTimeRemaining => prevTimeRemaining - 10);
+      setTimeRemaining((prevTimeRemaining) => prevTimeRemaining - 10);
 
       // Instead of using open inside the dialog element in the ResultModal component,
       // we create a ref called dialog and passed it as prop, which will then be used in the dialog element as ref (built-in prop for dialog).
@@ -41,7 +51,9 @@ const TimerChallenge = ({ title, targetTime }) => {
   // and therefore, now with that, finally, we can save this and start and stop this and we don't get you lost.
 
   const handleStop = () => {
-    clearTimeout(timer.current);
+    // clearTimeout(timer.current);
+    dialog.current.open();
+    clearInterval(timer.current);
   };
 
   return (
@@ -52,19 +64,19 @@ const TimerChallenge = ({ title, targetTime }) => {
       {/* {timerExpired && (
         <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
       )} */}
-      <ResultModal ref={dialog} targetTime={targetTime} result="lost" />
+      <ResultModal ref={dialog} targetTime={targetTime} remainingTime={timeRemaining} onReset={handleReset} />
       <section className="challenge">
         <h2>{title}</h2>
         <p className="challenge-time">
           {targetTime} second{targetTime > 1 ? "s" : ""}
         </p>
         <p>
-          <button onClick={timerStarted ? handleStop : handleStart}>
-            {timerStarted ? "Stop" : "Start"} Challenge
+          <button onClick={timerIsActive ? handleStop : handleStart}>
+            {timerIsActive ? "Stop" : "Start"} Challenge
           </button>
         </p>
-        <p className={timerStarted ? "active" : undefined}>
-          {timerStarted ? "Time is running..." : "Timer Inactive"}
+        <p className={timerIsActive ? "active" : undefined}>
+          {timerIsActive ? "Time is running..." : "Timer Inactive"}
         </p>
       </section>
     </>

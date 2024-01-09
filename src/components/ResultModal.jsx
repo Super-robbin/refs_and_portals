@@ -5,10 +5,13 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 // Step 2 - the new function now takes 2 parameters, the props and then ref as shown below.
 
 const ResultModal = forwardRef(function ResultModal(
-  { result, targetTime },
+  { result, targetTime, remainingTime, onReset },
   ref
 ) {
   const dialog = useRef();
+  const userLost = remainingTime <= 0;
+  const formattedRemainingTime = (remainingTime / 1000).toFixed(2);
+  const score = Math.round((1 - remainingTime / (targetTime * 1000)) * 100);
   // We can call this hook in this component function to define properties and methods that should be accessible
   // on this component from outside this component. Now, useImperativeHandle needs two arguments
   // FIRST - must be this ref which you get from forwardRef.
@@ -37,14 +40,15 @@ const ResultModal = forwardRef(function ResultModal(
     // but unfortunately this built-in backdrop will not be shown if you force the dialog to be visible
     // by setting open to true like we did initially below.
     <dialog ref={dialog} className="result-modal">
-      <h2>You {result}</h2>
+      {userLost ? <h2>You lost</h2> : <h2>Your Score: {score}</h2>}
       <p>
         The target time was <strong>{targetTime} seconds.</strong>
       </p>
       <p>
-        You stopped the timer with <strong>X seconds left.</strong>
+        You stopped the timer with{" "}
+        <strong>{formattedRemainingTime} seconds left.</strong>
       </p>
-      <form method="dialog">
+      <form method="dialog" onSubmit={onReset}>
         <button>Close</button>
       </form>
     </dialog>
